@@ -1,13 +1,9 @@
 package com.sng.sender;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import com.sng.dto.MailRequest;
@@ -20,7 +16,7 @@ import com.sng.dto.ResultInfo;
  *
  */
 @Component(value="mailsender")
-public class MailSender implements Sender {
+public class JavaSender implements Sender {
 	
 	 @Autowired
 	 private JavaMailSender sender;
@@ -32,32 +28,31 @@ public class MailSender implements Sender {
 		 MailRequest mailReq = (MailRequest) req;
 		 
 		 try {
-			 MimeMessage mail = sender.createMimeMessage();
-			 MimeMessageHelper helper = new MimeMessageHelper(mail, true);
-			 
+			 SimpleMailMessage message = new SimpleMailMessage();
+
 			 //From
-			 helper.setFrom(new InternetAddress("sng@gmail.com"));
+			 message.setFrom("sng@gmail.com");
 
 			 //To
-			 helper.setTo(mailReq.getTo());
+			 message.setTo(mailReq.getTo());
 
 			 //cc
-			 helper.setCc(mailReq.getCc());
+			 message.setCc(mailReq.getCc());
 
 			 //Bcc
-			 helper.setBcc(mailReq.getBcc());
+			 message.setBcc(mailReq.getBcc());
 
 			 //Subject
-			 helper.setSubject(mailReq.getSubject());
+			 message.setSubject(mailReq.getSubject());
 
 			 //Text
-			 helper.setText(mailReq.getText());
+			 message.setText(mailReq.getText());
 
-			 sender.send(mail);
+			sender.send(message);
 
 			 res = new ResultInfo(MessageStatus.SUCCESS, "Email Enviado Correctamente");
 
-		 }catch (MailException | MessagingException mex) {
+		 }catch (MailException mex) {
 			 mex.printStackTrace();
 			 res = new ResultInfo(MessageStatus.FAILED, mex.getMessage());
 		 }

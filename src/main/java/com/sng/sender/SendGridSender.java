@@ -10,7 +10,7 @@ public class SendGridSender implements Sender {
 
 	@Override
 	public ResultInfo send(Request req) {
-		ResultInfo res = new ResultInfo(MessageStatus.FAILED, "NOT YET IMPLEMENTED");		
+		ResultInfo res = new ResultInfo(MessageStatus.FAILED, "SENDGRID NOT YET IMPLEMENTED");		
 		return res;
 	}
 

@@ -10,9 +10,11 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +31,11 @@ import com.sng.dto.ResultInfo;
 import com.sng.dto.SlackRequest;
 import com.sng.metrics.MetricService;
 import com.sng.repository.MessageRepository;
+import com.sng.sender.JavaSender;
 import com.sng.sender.MessageStatus;
+import com.sng.sender.SendGridSender;
 import com.sng.sender.Sender;
+import com.sng.sender.SenderType;
 
 /**
  * Definicion del controlador MessageController.
@@ -46,6 +51,9 @@ public class MessageController {
 	private static final String SCHEME = "http://";
 	
 	@Autowired
+	private ApplicationContext context;
+	
+	@Autowired
 	private Environment env;
 	
 	@Autowired
@@ -55,18 +63,14 @@ public class MessageController {
 	private MetricService metrics;
 	
 	@Autowired
-	@Qualifier("mailsender")
-	private Sender mailSender; 
-	
-	@Autowired
-	@Qualifier("sendgridsender")
-	private Sender sendGridSender; 
-
-	@Autowired
 	@Qualifier("slacksender")
 	private Sender slackSender;
-	
+
+	//Mail sender si esta disponible java mail o sendgrid
+	private Sender mailSender; 
+
 	private ApiInfo info;
+
 	private String port;
 	
 	/**
@@ -106,21 +110,13 @@ public class MessageController {
 	 * @return
 	 * @throws URISyntaxException 
 	 */
-	@RequestMapping(value="/javamail", method=RequestMethod.POST)
+	@RequestMapping(value="/mail", method=RequestMethod.POST)
 	public HttpEntity<Message> sendByJavaMail(@RequestBody final MailRequest mail) throws URISyntaxException {
-		ResultInfo res = this.mailSender.send(mail);
-		return ResponseEntity.created(this.storeInRepositoryAndUpdateMetrics(res, mail)).build();
-	}
-	
-	/**
-	 * Envia un mensaje por sendGrid.
-	 * @return
-	 * @throws URISyntaxException 
-	 */
-	@RequestMapping(value="/sendgrid", method=RequestMethod.POST)
-	public HttpEntity<Message> sendBySendGrid(@RequestBody final MailRequest mail) throws URISyntaxException {
-		ResultInfo res = this.sendGridSender.send(mail);
-		return ResponseEntity.created(this.storeInRepositoryAndUpdateMetrics(res, mail)).build();
+		if(this.mailSender != null){
+			ResultInfo res = this.mailSender.send(mail);
+			return ResponseEntity.created(this.storeInRepositoryAndUpdateMetrics(res, mail)).build();
+		}
+		else return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();		
 	}
 	
 	/**
@@ -154,13 +150,31 @@ public class MessageController {
 	@PostConstruct
 	public void buildApiInfo(){
 		this.port = env.getProperty("server.port");
+		this.prepareMailSender(env.getProperty("mail.sender"));
 		this.info = new ApiInfo();
 		this.info.addLink(new Link(SCHEME + HOST + port + "/api", Link.REL_SELF));
 		this.info.addLink(new Link(SCHEME + HOST + port + "/api/metrics", "metrics"));
 		this.info.addLink(new Link(SCHEME + HOST + port + "/api/message/{id}", "message"));
-		this.info.addLink(new Link(SCHEME + HOST + port + "/api/javamail", "javamail"));
-		this.info.addLink(new Link(SCHEME + HOST + port + "/api/sendgrid", "sendgrid"));
+		this.info.addLink(new Link(SCHEME + HOST + port + "/api/mail", "javamail"));		
 		this.info.addLink(new Link(SCHEME + HOST + port + "/api/slack", "slack"));		
 	}
 	
+	/**
+	 * Prepara el sender si esta habilitado en el properties.
+	 */
+	private void prepareMailSender(String type){	
+		if (type != null) {
+			switch(SenderType.valueOf(type.toUpperCase())){
+			case JAVA:
+				this.mailSender = context.getBean(JavaSender.class);
+				break;
+			case SENDGRID:
+				this.mailSender = context.getBean(SendGridSender.class);
+				break;
+			default:
+				this.mailSender = null;
+				break;
+			}
+		}
+	}
 }
