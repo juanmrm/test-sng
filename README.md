@@ -20,7 +20,7 @@ Para probar el envio por java mail desactivar (https://www.google.com/settings/s
 
 SLACK:
 Para probar el envio de mensajes a slack hace falta indicar un token adecuado (https://api.slack.com/custom-integrations/legacy-tokens)
-slack.token=xxxx-xxxxxxxxx-xxxx 
+- slack.token=xxxx-xxxxxxxxx-xxxx 
 
 # Prerequisitos
 Maven 3.x
