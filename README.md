@@ -13,9 +13,9 @@ Utiliza una base de datos MongoDB embebida para almacenar los mensajes que se va
 # Configuracion application.properties
 
 Para probar el envio por java mail desactivar (https://www.google.com/settings/security/lesssecureapps) y configurar:
-	- spring.mail.username=user@gmail.com
-	- spring.mail.password=pass
-	- mail.sender=java
+- spring.mail.username=user@gmail.com
+- spring.mail.password=pass
+- mail.sender=java
 
 # Prerequisitos
 Maven 3.x
