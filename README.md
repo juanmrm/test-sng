@@ -12,10 +12,15 @@ Utiliza una base de datos MongoDB embebida para almacenar los mensajes que se va
 
 # Configuracion application.properties
 
+JAVA MAIL:
 Para probar el envio por java mail desactivar (https://www.google.com/settings/security/lesssecureapps) y configurar:
 - spring.mail.username=user@gmail.com
 - spring.mail.password=pass
 - mail.sender=java
+
+SLACK:
+Para probar el envio de mensajes a slack hace falta indicar un token adecuado (https://api.slack.com/custom-integrations/legacy-tokens)
+slack.token=xxxx-xxxxxxxxx-xxxx 
 
 # Prerequisitos
 Maven 3.x

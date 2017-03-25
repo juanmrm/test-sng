@@ -34,7 +34,7 @@ public class SlackSender implements Sender {
 			postMessage.setIcon_emoji(slkReq.getIcon_emoji());
 			postMessage.setIcon_url(slkReq.getIcon_url());
 			String ts = webApiClient.postMessage(postMessage);
-			res = new ResultInfo(MessageStatus.SUCCESS, ts);
+			res = new ResultInfo(MessageStatus.SUCCESS, "Mensaje Enviado Correctamente con timestamp: " + ts);
 		}
 		catch (SlackResponseErrorException ex) {
 			res = new ResultInfo(MessageStatus.FAILED, ex.getMessage());

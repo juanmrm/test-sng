@@ -59,9 +59,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!-- SendGrid -->
+        <dependency>
+    		<groupId>com.sendgrid</groupId>
+    		<artifactId>sendgrid-java</artifactId>
+    		<version>3.2.0</version>
+		</dependency>
         <!-- A Java client for the Slack Web API, Incoming Webhooks, Slackbot Remote Control, RTM(Real Time Messaging) API
         	https://github.com/allbegray/slack-api
-        -->        
+        -->
         <dependency>
 			<groupId>com.github.allbegray</groupId>
     		<artifactId>slack-api</artifactId>
