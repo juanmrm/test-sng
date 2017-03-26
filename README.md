@@ -27,7 +27,9 @@ Maven 3.x
 JDK 1.8.x
 
 # Despliegue de 2 maneras
-Dentro de la carpeta del proyecto (cd prueba-tecnica)
+Dentro de la carpeta del proyecto (cd test-sng)
+
+En WINDOWS:
 
 	1 - Directamente
 		1.1 mvnw spring-boot:run
@@ -36,6 +38,13 @@ Dentro de la carpeta del proyecto (cd prueba-tecnica)
 		2.1 mvnw clean package 
 		2.2 java -jar target\prueba-tecnica-0.0.1-SNAPSHOT.jar  
 		
+EN UNIX:
+
+	1 - Construccion
+		1.1 mvn clean install
+		
+	2 - Ejecucion 
+		2.1 java -jar target\prueba-tecnica-0.0.1-SNAPSHOT.jar  
 
 # Test del api
 Por ejemplo con Postman, Curl...
